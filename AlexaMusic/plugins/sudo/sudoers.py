@@ -102,24 +102,37 @@ async def userdel(client, message: Message, _):
 @language
 async def sudoers_list(client, message: Message, _):
     text = _["sudo_5"]
-    user = await app.get_users(OWNER_ID)
-    user = user.first_name if not user.mention else user.mention
-    text += f"1➤ {user}\n"
+    
+    # Fetch user(s) from OWNER_ID, which is a list
+    users = await app.get_users(OWNER_ID)
+
+    # If there are multiple owners, get their mentions
+    if isinstance(users, list):  
+        user_mentions = [user.mention if hasattr(user, "mention") else user.first_name for user in users]
+        text += "".join([f"{i+1}➤ {mention}\n" for i, mention in enumerate(user_mentions)])
+    else:
+        user = users  # If only one owner
+        text += f"1➤ {user.mention if hasattr(user, 'mention') else user.first_name}\n"
+
     count = 0
     smex = 0
+
     for user_id in SUDOERS:
         if user_id not in OWNER_ID:
             try:
                 user = await app.get_users(user_id)
-                user = user.first_name if not user.mention else user.mention
+                mention = user.mention if hasattr(user, "mention") else user.first_name
+                
                 if smex == 0:
                     smex += 1
                     text += _["sudo_6"]
+                
                 count += 1
-                text += f"{count}➤ {user}\n"
+                text += f"{count}➤ {mention}\n"
             except Exception:
                 continue
-    if not text:
+
+    if not text.strip():  # Ensure text is not empty
         await message.reply_text(_["sudo_7"])
     else:
         await message.reply_text(text)
