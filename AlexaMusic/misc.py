@@ -55,7 +55,7 @@ def dbb():
 
 async def sudo():
     global SUDOERS
-    SUDOERS.add(config.OWNER_ID)
+    SUDOERS.update(set(config.OWNER_ID))  # Convert list to set
     sudoersdb = mongodb.sudoers
     sudoers = await sudoersdb.find_one({"sudo": "sudo"})
     sudoers = [] if not sudoers else sudoers["sudoers"]
@@ -68,7 +68,7 @@ async def sudo():
         )
     if sudoers:
         for user_id in sudoers:
-            SUDOERS.add(user_id)
+            SUDOERS.update(set(config.OWNER_ID))  # Convert list to set
     LOGGER(__name__).info(f"Sudoers Loaded.")
 
 
