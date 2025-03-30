@@ -33,7 +33,12 @@ LOG_GROUP_ID = int(getenv("LOG_GROUP_ID", ""))
 
 MUSIC_BOT_NAME = getenv("MUSIC_BOT_NAME")
 
-OWNER_ID = int(getenv("OWNER_ID", None))
+OWNER_ID = getenv("OWNER_ID")
+
+if OWNER_ID:
+    OWNER_ID = [int(x) for x in OWNER_ID.split(",")]  # Split by commas and convert to int
+else:
+    OWNER_ID = []  # Empty list if not provided
 
 HEROKU_API_KEY = getenv("HEROKU_API_KEY")
 
